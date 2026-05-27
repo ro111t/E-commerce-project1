@@ -10,6 +10,8 @@ const app = express();
 const SALT_ROUNDS = 10;
 const PORT = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 app.use(express.static(path.join(__dirname, 'public'))); 
@@ -17,10 +19,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'sfsu-dealership-secret',
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   cookie: { 
     maxAge: 600000, // Session lasts 10 minutes
-    secure: false, // Set to true if using HTTPS
+    secure: false,
     httpOnly: true,
     sameSite: 'lax'
   }
