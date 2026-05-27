@@ -18,8 +18,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
   secret: 'sfsu-dealership-secret',
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
   cookie: { maxAge: 600000 } // Session lasts 10 minutes
 }));
 
