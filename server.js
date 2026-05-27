@@ -43,16 +43,22 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.post('/register', async (req, res) => {
   const { username, password, confirmPassword } = req.body;
+  console.log('Registration attempt:', username);
   if (password !== confirmPassword) {
     return res.render('register', { error: "Passwords do not match." });
   }
   try {
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
     db.run("INSERT INTO users (username, password) VALUES (?, ?)", [username, hashedPassword], (err) => {
-      if (err) return res.render('register', { error: "Username already taken." });
+      if (err) {
+        console.log('Registration error:', err);
+        return res.render('register', { error: "Username already taken." });
+      }
+      console.log('User registered successfully:', username);
       res.render('login', { success: "Account created! You can now log in." });
     });
   } catch (error) {
+    console.log('Registration catch error:', error);
     res.render('register', { error: "Error creating account. Please try again." });
   }
 });
@@ -61,13 +67,23 @@ app.get('/register', (req, res) => res.render('register'));
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
+  console.log('Login attempt:', username);
   db.get("SELECT * FROM users WHERE username = ?", [username], async (err, user) => {
-    if (err) return res.render('login', { error: "Database error. Please try again." });
-    if (!user) return res.render('login', { error: "Invalid username or password." });
+    if (err) {
+      console.log('Login DB error:', err);
+      return res.render('login', { error: "Database error. Please try again." });
+    }
+    if (!user) {
+      console.log('User not found:', username);
+      return res.render('login', { error: "Invalid username or password." });
+    }
+    console.log('User found, comparing password');
     try {
       const passwordMatch = await bcrypt.compare(password, user.password);
+      console.log('Password match:', passwordMatch);
       if (passwordMatch) {
         req.session.user = user;
+        console.log('Login successful, session created');
         db.all("SELECT * FROM inventory", (err, rows) => {
           res.render('products', { 
             inventory: rows, 
@@ -75,9 +91,11 @@ app.post('/login', async (req, res) => {
           });
         });
       } else {
+        console.log('Password mismatch');
         res.render('login', { error: "Invalid username or password." });
       }
     } catch (error) {
+      console.log('Login catch error:', error);
       res.render('login', { error: "Error logging in. Please try again." });
     }
   });
