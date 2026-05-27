@@ -2,6 +2,7 @@
 const express = require('express');
 const path = require('path'); 
 const session = require('express-session');
+const SQLiteStore = require('connect-sqlite3')(session);
 const bcrypt = require('bcrypt');
 
 const db = require('./database');
@@ -17,9 +18,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public'))); 
 
 app.use(session({
+  store: new SQLiteStore({
+    db: 'sessions.db',
+    dir: './'
+  }),
   secret: 'sfsu-dealership-secret',
-  resave: true,
-  saveUninitialized: true,
+  resave: false,
+  saveUninitialized: false,
   cookie: { maxAge: 600000 } // Session lasts 10 minutes
 }));
 
