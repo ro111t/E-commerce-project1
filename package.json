@@ -16,10 +16,8 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "better-sqlite3": "^11.0.0",
     "express": "^5.2.1",
     "express-session": "^1.18.0",
-    "express-session-better-sqlite3": "^1.0.0",
     "pug": "^3.0.4",
     "sqlite3": "^5.1.7"
   }

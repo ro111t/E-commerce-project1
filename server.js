@@ -2,7 +2,6 @@
 const express = require('express');
 const path = require('path'); 
 const session = require('express-session');
-const BetterSqlite3Store = require('express-session-better-sqlite3');
 const bcrypt = require('bcrypt');
 
 const db = require('./database');
@@ -11,16 +10,11 @@ const app = express();
 const SALT_ROUNDS = 10;
 const PORT = process.env.PORT || 3000;
 
-app.set('trust proxy', 1);
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 app.use(express.static(path.join(__dirname, 'public'))); 
 
 app.use(session({
-  store: new BetterSqlite3Store({
-    path: './sessions.db'
-  }),
   secret: 'sfsu-dealership-secret',
   resave: false,
   saveUninitialized: false,
